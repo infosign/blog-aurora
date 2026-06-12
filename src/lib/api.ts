@@ -46,7 +46,7 @@ async function fetchPage(cursor: string | null): Promise<{ items: Article[]; nex
   if (cursor) params.set('cursor', cursor);
 
   const res = await fetchWithRetry(
-    `${BASE_URL}/aurora/articles?${params}`,
+    `${BASE_URL}/aurora/articles/by-status?${params}&status=published`,
     { headers: { 'x-api-key': getApiKey() } }
   );
 
