@@ -1,0 +1,44 @@
+---
+import { getAllArticles, getArticle } from '../../lib/api';
+import type { Article } from '../../lib/api';
+
+export async function getStaticPaths() {
+  const articles = await getAllArticles();
+  return articles.map(a => ({ params: { id: a.article_id } }));
+}
+
+const { id } = Astro.params;
+const article: Article = await getArticle(id as string);
+---
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{article.title}</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem; }
+    .back { font-size: 0.9rem; color: #1d4ed8; text-decoration: none; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 1.8rem; margin: 1rem 0 0.5rem; }
+    .meta { font-size: 0.85rem; color: #6b7280; margin-bottom: 1.5rem; }
+    .badge { display: inline-block; background: #fce7f3; color: #9d174d; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; margin-right: 4px; }
+    .body { line-height: 1.8; white-space: pre-wrap; }
+    hr { border: none; border-top: 1px solid #e5e7eb; margin: 2rem 0; }
+  </style>
+</head>
+<body>
+  <a class="back" href="/">&lt; 記事一覧へもどる</a>
+  <h1>{article.title}</h1>
+  <div class="meta">
+    著者: {article.author_name || article.author_id}
+    &nbsp;|&nbsp;
+    {new Date(article.created_at).toLocaleDateString('ja-JP')}
+    &nbsp;
+    {article.tags?.map(tag => <span class="badge">{tag}</span>)}
+  </div>
+  <hr />
+  <div class="body">{article.body}</div>
+</body>
+</html>
